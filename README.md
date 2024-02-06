@@ -1,7 +1,7 @@
 
 
 # React Multi Select App
-
+![Screenshot](multiselect.png)
 
 ## Available Scripts
 
