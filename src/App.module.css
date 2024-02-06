@@ -1,0 +1,20 @@
+.app {
+  background-color: #ecf0f1;
+  min-height: 100vh;
+}
+
+.multiselectContainer {
+  width: 400px;
+}
+
+.rick {
+  position: absolute;
+  left: -150px;
+  top: 15%;
+}
+
+.morty {
+  position: absolute;
+  right: -150px;
+  top: 15%;
+}
