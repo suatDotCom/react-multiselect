@@ -1,4 +1,11 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import styles from "./multiSelect.module.css";
 import { FaAngleDown, FaCircleXmark } from "react-icons/fa6";
 import MultiSelectItem from "./multiSelectItem";
@@ -40,6 +47,8 @@ const MultiSelect: FC<MultiSelectProps> = ({
   onSearch,
   onChangePage,
 }) => {
+  const searchBoxRef = useRef<HTMLDivElement>(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [showSearchBox, setShowSearchBox] = useState(false);
 
@@ -75,8 +84,8 @@ const MultiSelect: FC<MultiSelectProps> = ({
   const handleScroll = useCallback(
     (e: React.UIEvent<HTMLElement>) => {
       let { scrollTop, scrollHeight, clientHeight } = e.target as HTMLElement;
-
       if (scrollTop + clientHeight >= scrollHeight && currentPage < totalPage) {
+        setScrollPosition(scrollTop);
         onChangePage && onChangePage(currentPage + 1);
       }
     },
@@ -86,6 +95,12 @@ const MultiSelect: FC<MultiSelectProps> = ({
   useEffect(() => {
     onSearch && onSearch(searchText);
   }, [searchText]);
+
+  useEffect(() => {
+    if (searchBoxRef.current) {
+      searchBoxRef.current.scrollTop = scrollPosition;
+    }
+  }, [items, searchBoxRef.current]);
 
   return (
     <div className={`${styles.multiselectContainer}`}>
@@ -155,6 +170,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
       </div>
 
       <div
+        ref={searchBoxRef}
         className={`${styles.searchBox} d-flex flex-col shadow ${
           showSearchBox ? "opacity-1" : "opacity-0"
         }`}
@@ -162,7 +178,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
       >
         {itemsLoading ? (
           <div className="d-flex flex-col gap-1 m-20">
-            {Array.from({ length: 10 }).map((_, index) => (
+            {Array.from({ length: 5 }).map((_, index) => (
               <MultiSelectItemLoading key={index} />
             ))}
           </div>
