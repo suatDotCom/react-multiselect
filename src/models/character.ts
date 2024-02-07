@@ -1,4 +1,3 @@
-import { screen } from '@testing-library/react';
 import { CharacterGender } from '../shared/constants/character';
 export interface Character {
   id: number;

@@ -1,5 +1,8 @@
 import React, { useCallback, useMemo } from "react";
 import styles from "./multiSelectItem.module.css";
+import {
+  SPACE_KEY_CODE,
+} from "../../shared/constants/keyboardKeys";
 
 interface MultiSelectItemProps {
   imageSrc?: string;
@@ -27,13 +30,18 @@ const MultiSelectItem: React.FC<MultiSelectItemProps> = ({
       key={title}
       className={`${styles.multiselectItem}`}
       onClick={onSelectItem}
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.keyCode == SPACE_KEY_CODE) {
+          e.preventDefault();
+          onSelectItem();
+        }
+      }}
     >
       <div className="d-flex flex-row gap-1 items-center">
         <div className={`${styles.checkbox}`}>
-          <input type="checkbox" checked={isSelected} />
-          <span
-            className={`${styles.checkmark}`}
-          />
+          <input tabIndex={-1} type="checkbox" checked={isSelected} />
+          <span className={`${styles.checkmark}`} />
         </div>
 
         <img src={imageSrc} className={styles.image} />

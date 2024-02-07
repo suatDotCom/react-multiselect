@@ -1,10 +1,4 @@
-import React, {
-  FC,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./multiSelect.module.css";
 import { FaAngleDown, FaCircleXmark } from "react-icons/fa6";
 import MultiSelectItem from "./multiSelectItem";
@@ -14,6 +8,11 @@ import {
   SelectedItemModel,
 } from "../../shared/types/multiSelectItemModel";
 import MultiSelectItemLoading from "./loading/multiSelectItemLoading";
+import {
+  ENTER_KEY_CODE,
+  SPACE_KEY_CODE,
+  UP_KEY_CODE,
+} from "../../shared/constants/keyboardKeys";
 
 interface MultiSelectProps {
   items: MultiSelectItemModel[];
@@ -80,10 +79,6 @@ const MultiSelect: FC<MultiSelectProps> = ({
       if (scrollTop + clientHeight >= scrollHeight && currentPage < totalPage) {
         onChangePage && onChangePage(currentPage + 1);
       }
-
-      // if (scrollTop === 0 && currentPage > 1) {
-      //   onChangePage && onChangePage(currentPage - 1);
-      // }
     },
     [currentPage, totalPage, onChangePage]
   );
@@ -96,6 +91,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
     <div className={`${styles.multiselectContainer}`}>
       <div className="relative d-flex flex-row justify-between items-center gap-1">
         <input
+          tabIndex={0}
           type="text"
           className={`${styles.search} shadow`}
           placeholder={placeholder}
@@ -108,15 +104,35 @@ const MultiSelect: FC<MultiSelectProps> = ({
 
         <div>
           <FaAngleDown
-            className={`${styles.dropdownButton} ${showSearchBox && styles.open}`}
+            tabIndex={0}
+            className={`${styles.dropdownButton} ${
+              showSearchBox && styles.open
+            }`}
             onClick={() => {
               setShowSearchBox(!showSearchBox);
+            }}
+            onKeyDown={(e) => {
+              if (
+                e.keyCode === SPACE_KEY_CODE ||
+                e.keyCode === ENTER_KEY_CODE
+              ) {
+                setShowSearchBox(!showSearchBox);
+              }
             }}
           />
           {showClearButton && (
             <FaCircleXmark
+              tabIndex={0}
               className={`${styles.clearButton}`}
               onClick={onClearSearch}
+              onKeyDown={(e) => {
+                if (
+                  e.keyCode === SPACE_KEY_CODE ||
+                  e.keyCode === ENTER_KEY_CODE
+                ) {
+                  onClearSearch();
+                }
+              }}
             />
           )}
         </div>
@@ -125,7 +141,7 @@ const MultiSelect: FC<MultiSelectProps> = ({
       <div className={`${styles.selectedItemContainer} shadow`}>
         {selectedItems?.map((item, index) => (
           <div key={index} className={`${styles.selectedItem} shadow`}>
-             <div className="relative">
+            <div className="relative">
               <FaCircleXmark
                 className={styles.removeButton}
                 onClick={() => {
@@ -134,8 +150,6 @@ const MultiSelect: FC<MultiSelectProps> = ({
               />
             </div>
             {item.label}
-
-           
           </div>
         ))}
       </div>
@@ -151,6 +165,10 @@ const MultiSelect: FC<MultiSelectProps> = ({
             {Array.from({ length: 10 }).map((_, index) => (
               <MultiSelectItemLoading key={index} />
             ))}
+          </div>
+        ) : !itemsLoading && items.length < 1 ? (
+          <div className="m-20">
+            <span>No items found</span>
           </div>
         ) : (
           items.map((item, index) => (
